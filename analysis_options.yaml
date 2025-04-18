@@ -1,0 +1,12 @@
+analyzer:
+  # Remove the plugins section if it only contained custom_lint
+  # plugins:
+  #   - custom_lint
+  # Or remove just the - custom_lint line if there were other plugins
+
+# You might want to add the recommended Flutter lints:
+# include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Add any specific lint rules you want here
