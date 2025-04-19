@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hello_world/ui/home/widgets/home_page.dart';
+import 'package:provider/provider.dart';
+import 'config/dependencies.dart';
+import 'ui/home/widgets/home_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: providers, child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
