@@ -31,12 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (viewmodel.incrementCounter.running) {
                   return CircularProgressIndicator();
                 } else if (viewmodel.incrementCounter.error) {
-                  final error =
-                      ((viewmodel.incrementCounter.result as Error).error
-                              as DividableException)
-                          .message
-                          .toString();
-                  return Text(error);
+                  return Text(viewmodel.incrementCounter.result.toString());
                 } else {
                   return Text(
                     widget.viewmodel.counter.toString(),
