@@ -1,44 +1,55 @@
 import 'package:flutter/material.dart';
+import '../../../domain/exceptions/dividable_exception.dart';
+import '../../../utils/result.dart';
+import '../viewmodels/home_viewmodel.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key, required this.viewmodel});
+  final HomeViewmodel viewmodel;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final viewmodel = widget.viewmodel;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text('Home'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+          children: [
+            ListenableBuilder(
+              listenable: viewmodel.incrementCounter,
+              builder: (context, _) {
+                if (viewmodel.incrementCounter.running) {
+                  return CircularProgressIndicator();
+                } else if (viewmodel.incrementCounter.error) {
+                  final error =
+                      ((viewmodel.incrementCounter.result as Error).error
+                              as DividableException)
+                          .message
+                          .toString();
+                  return Text(error);
+                } else {
+                  return Text(
+                    widget.viewmodel.counter.toString(),
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  );
+                }
+              },
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: viewmodel.incrementCounter.execute,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
