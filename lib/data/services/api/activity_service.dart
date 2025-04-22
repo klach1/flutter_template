@@ -12,12 +12,22 @@ class ActivityService {
     final parameters = <String, dynamic>{"type": type};
 
     try {
-      final response = await _apiClient.get<List<ActivityApiModel>>(
+      final response = await _apiClient.get<List<dynamic>>(
         path,
         queryParameters: parameters,
       );
 
-      return Result.ok(response.data ?? []);
+      // Map the response data to a list of ActivityApiModel objects
+      final List<dynamic> responseData = response.data ?? [];
+      final activities =
+          responseData
+              .map(
+                (json) =>
+                    ActivityApiModel.fromJson(json as Map<String, dynamic>),
+              )
+              .toList();
+
+      return Result.ok(activities);
     } on Exception catch (e) {
       return Result.error(e);
     }

@@ -19,7 +19,7 @@ class HomeViewmodel extends ChangeNotifier {
 
   HomeViewmodel({required ActivityRepository activityRepository})
     : _activityRepository = activityRepository {
-    loadActivities = Command1(_load);
+    loadActivities = Command1(_load)..execute('recreational');
     incrementCounter = Command0(_incrementCounter);
   }
 
@@ -44,15 +44,18 @@ class HomeViewmodel extends ChangeNotifier {
   }
 
   Future<Result<void>> _load(String type) async {
-    final activitiesResult = await _activityRepository.getActivities(type);
-    switch (activitiesResult) {
-      case Ok<List<Activity>>():
-        _activities = activitiesResult.value;
-        notifyListeners();
-      case Error<List<Activity>>():
-      //TODO show toast
+    try {
+      final activitiesResult = await _activityRepository.getActivities(type);
+      switch (activitiesResult) {
+        case Ok<List<Activity>>():
+          _activities = activitiesResult.value;
+          notifyListeners();
+        case Error<List<Activity>>():
+        //TODO show toast
+      }
+      return activitiesResult;
+    } on Exception catch (e) {
+      return Result.error(e);
     }
-
-    return activitiesResult;
   }
 }

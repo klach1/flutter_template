@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class ApiClient {
   final Dio _dio;
 
-  ApiClient({String baseUrl = 'hhttps://bored-api.appbrewery.com'})
+  ApiClient({String baseUrl = 'https://bored-api.appbrewery.com/'})
     : _dio = Dio(
         BaseOptions(
           baseUrl: baseUrl,
