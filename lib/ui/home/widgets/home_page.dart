@@ -1,44 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import '../viewmodels/home_viewmodel.dart';
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends HookWidget {
   const MyHomePage({super.key, required this.viewmodel});
   final HomeViewmodel viewmodel;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
-
-    widget.viewmodel.loadActivities.addListener(_onLoad);
-  }
-
-  @override
-  void dispose() {
-    widget.viewmodel.loadActivities.removeListener(_onLoad);
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant MyHomePage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    oldWidget.viewmodel.loadActivities.removeListener(_onLoad);
-    widget.viewmodel.loadActivities.addListener(_onLoad);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final viewmodel = widget.viewmodel;
+    final viewmodel = this.viewmodel;
+
+    // Define _onLoad function before using it
+    void _onLoad() {
+      if (viewmodel.loadActivities.completed) {
+        viewmodel.loadActivities.clearResult();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Activities loaded successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+
+      if (viewmodel.loadActivities.error) {
+        viewmodel.loadActivities.clearResult();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Activities load failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+
+    // Use useEffect for lifecycle methods (similar to initState and dispose)
+    useEffect(() {
+      // This runs on mount (similar to initState)
+      viewmodel.loadActivities.addListener(_onLoad);
+
+      // Return a cleanup function (similar to dispose)
+      return () {
+        viewmodel.loadActivities.removeListener(_onLoad);
+      };
+    }, [viewmodel]); // Dependency array - will re-run if viewmodel changes
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.white,
         title: Text('Home'),
+        surfaceTintColor: Colors.white,
       ),
+      backgroundColor:
+          Colors.white, // Adding white background color to the Scaffold
       body: ListenableBuilder(
         listenable: viewmodel.loadActivities,
         builder: (context, _) {
@@ -83,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
           } else {
             return RefreshIndicator(
               onRefresh: () async {
-                await widget.viewmodel.loadActivities.execute('recreational');
+                await viewmodel.loadActivities.execute('recreational');
               },
               child: ListView.builder(
                 itemCount: viewmodel.activities.length,
@@ -103,27 +116,5 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
-  }
-
-  void _onLoad() {
-    if (widget.viewmodel.loadActivities.completed) {
-      widget.viewmodel.loadActivities.clearResult();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Activities loaded successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    }
-
-    if (widget.viewmodel.loadActivities.error) {
-      widget.viewmodel.loadActivities.clearResult();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Activities load failed'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
   }
 }
