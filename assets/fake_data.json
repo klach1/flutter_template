@@ -1,0 +1,206 @@
+{
+  "events": [
+    {
+      "id": "evt_001",
+      "title": "Záchranné cvičení s drony",
+      "description": "Rozsáhlé cvičení zaměřené na vyhledávání pohřešovaných osob pomocí dronové technologie v horském terénu.",
+      "imageUrl": "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400",
+      "location": {
+        "address": "Krkonoše, Pec pod Sněžkou",
+        "latitude": 50.7094,
+        "longitude": 15.7367
+      },
+      "startDateTime": "2025-06-15T09:00:00Z",
+      "endDateTime": "2025-06-15T17:00:00Z",
+      "category": "spolkove",
+      "maxParticipants": 20,
+      "currentParticipants": 12,
+      "maxPilots": 5,
+      "currentPilots": 3,
+      "organizerId": "usr_001",
+      "isUserRegistered": false,
+      "tasks": [
+        {
+          "id": "task_001",
+          "title": "Dostatek dobrovolníků",
+          "isCompleted": true
+        },
+        {
+          "id": "task_002", 
+          "title": "Pilot zajištěn",
+          "isCompleted": true
+        },
+        {
+          "id": "task_003",
+          "title": "Drone zajištěný", 
+          "isCompleted": false
+        },
+        {
+          "id": "task_004",
+          "title": "Krabice zajištěny",
+          "isCompleted": true
+        }
+      ],
+      "participants": ["usr_002", "usr_003", "usr_004", "usr_005"],
+      "pilots": ["usr_006", "usr_007", "usr_008"]
+    },
+    {
+      "id": "evt_002",
+      "title": "Drone racing závody",
+      "description": "Adrenalinové závody dronů v městském prostředí s překážkami a časomírou.",
+      "imageUrl": "https://images.unsplash.com/photo-1508614999368-9260051292e5?w=400",
+      "location": {
+        "address": "Letní stadion, Praha 7",
+        "latitude": 50.1109,
+        "longitude": 14.4434
+      },
+      "startDateTime": "2025-06-20T14:00:00Z",
+      "endDateTime": "2025-06-20T18:00:00Z",
+      "category": "otevrene",
+      "maxParticipants": 50,
+      "currentParticipants": 35,
+      "maxPilots": 15,
+      "currentPilots": 12,
+      "organizerId": "usr_009",
+      "isUserRegistered": true,
+      "tasks": [
+        {
+          "id": "task_005",
+          "title": "Dostatek dobrovolníků",
+          "isCompleted": true
+        },
+        {
+          "id": "task_006",
+          "title": "Pilot zajištěn", 
+          "isCompleted": true
+        },
+        {
+          "id": "task_007",
+          "title": "Drone zajištěný",
+          "isCompleted": true
+        },
+        {
+          "id": "task_008",
+          "title": "Krabice zajištěny",
+          "isCompleted": false
+        }
+      ],
+      "participants": ["usr_001", "usr_010", "usr_011"],
+      "pilots": ["usr_012", "usr_013"]
+    },
+    {
+      "id": "evt_003",
+      "title": "Školicí workshop pro začátečníky",
+      "description": "Úvodní kurz pro všechny, kteří se chtějí naučit létat s drony. Zahrnuje teorii i praktické lety.",
+      "imageUrl": "https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=400",
+      "location": {
+        "address": "Technická univerzita, Brno",
+        "latitude": 49.2266,
+        "longitude": 16.5957
+      },
+      "startDateTime": "2025-07-05T10:00:00Z",
+      "endDateTime": "2025-07-05T16:00:00Z",
+      "category": "prihlasene",
+      "maxParticipants": 15,
+      "currentParticipants": 8,
+      "maxPilots": 3,
+      "currentPilots": 2,
+      "organizerId": "usr_014",
+      "isUserRegistered": true,
+      "tasks": [
+        {
+          "id": "task_009",
+          "title": "Dostatek dobrovolníků",
+          "isCompleted": false
+        },
+        {
+          "id": "task_010",
+          "title": "Pilot zajištěn",
+          "isCompleted": true
+        },
+        {
+          "id": "task_011",
+          "title": "Drone zajištěný",
+          "isCompleted": true
+        },
+        {
+          "id": "task_012", 
+          "title": "Krabice zajištěny",
+          "isCompleted": false
+        }
+      ],
+      "participants": ["usr_001", "usr_015", "usr_016"],
+      "pilots": ["usr_017", "usr_018"]
+    }
+  ],
+  "users": [
+    {
+      "id": "usr_001",
+      "username": "jakub_pilot",
+      "email": "jakub@example.com",
+      "fullName": "Jakub Novák",
+      "avatarUrl": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150",
+      "isPilot": true,
+      "isOrganizer": false
+    },
+    {
+      "id": "usr_002",
+      "username": "marie_dobrovolnik",
+      "email": "marie@example.com", 
+      "fullName": "Marie Svobodová",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108755-2616b612b05b?w=150",
+      "isPilot": false,
+      "isOrganizer": false
+    },
+    {
+      "id": "usr_003",
+      "username": "petr_zachranar",
+      "email": "petr@example.com",
+      "fullName": "Petr Dvořák",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+      "isPilot": true,
+      "isOrganizer": true
+    }
+  ],
+  "chatMessages": [
+    {
+      "id": "msg_001",
+      "eventId": "evt_001",
+      "userId": "usr_001",
+      "message": "Ahoj všichni! Těším se na zítřejší cvičení.",
+      "timestamp": "2025-06-14T20:15:00Z"
+    },
+    {
+      "id": "msg_002", 
+      "eventId": "evt_001",
+      "userId": "usr_002",
+      "message": "Já taky! Mám nějaké dotazy ohledně vybavení.",
+      "timestamp": "2025-06-14T20:17:00Z"
+    },
+    {
+      "id": "msg_003",
+      "eventId": "evt_001", 
+      "userId": "usr_003",
+      "message": "Vybavení bude zajištěno, stačí si vzít pouze osobní věci.",
+      "timestamp": "2025-06-14T20:20:00Z"
+    }
+  ],
+  "eventNotes": [
+    {
+      "id": "note_001",
+      "eventId": "evt_001", 
+      "userId": "usr_001",
+      "title": "Poznámka k meteorologii",
+      "content": "Podle předpovědi by mělo být jasno, ale pro jistotu mít připravené náhradní plány.",
+      "timestamp": "2025-06-14T19:30:00Z"
+    },
+    {
+      "id": "note_002",
+      "eventId": "evt_002",
+      "userId": "usr_009", 
+      "title": "Bezpečnostní opatření",
+      "content": "Všichni účastníci musí mít ochranné brýle. Rezervní sada bude k dispozici.",
+      "timestamp": "2025-06-19T15:45:00Z"
+    }
+  ]
+}

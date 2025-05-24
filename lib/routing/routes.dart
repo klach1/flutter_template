@@ -1,4 +1,4 @@
 abstract final class Routes {
-  static const home = "/";
-  static const user = "/user";
+  static const events = "/";
+  static const eventDetail = "/events/:eventId";
 }
