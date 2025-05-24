@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Tato aplikace potřebuje přístup k vašemu kalendáři pro přidání událostí.</string>
 </dict>
 </plist>

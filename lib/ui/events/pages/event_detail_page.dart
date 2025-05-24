@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 import '../viewmodels/event_detail_viewmodel.dart';
 import '../../../domain/models/events/user.dart';
 import '../../../domain/models/events/chat_message.dart';
@@ -218,9 +218,8 @@ class _EventDetailPageState extends State<EventDetailPage>
           ),
           const SizedBox(height: 16),
           
-          // Tasks section (only for organizers)
-          if (event.isUserOrganizer) // TODO: Implement this property
-            _buildTasksSection(context, viewModel),
+          // Task list card - always visible for all users
+          _buildTasksCard(context, viewModel),
           
           const SizedBox(height: 20),
           
@@ -857,78 +856,336 @@ class _EventDetailPageState extends State<EventDetailPage>
     }
   }
 
-  // Missing methods for the new functionality
-  Widget _buildTasksSection(BuildContext context, EventDetailViewModel viewModel) {
+  Widget _buildTasksCard(BuildContext context, EventDetailViewModel viewModel) {
     final event = viewModel.event!;
     
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Úkoly',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        
-        // Task progress overview
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[200]!),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.task_alt, color: Theme.of(context).primaryColor),
-              const SizedBox(width: 12),
-              Text(
-                'Stav příprav: ${event.tasksProgress}',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        
-        // Task list
-        ...event.tasks.map((task) => Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: task.isCompleted ? Colors.green[50] : Colors.orange[50],
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: task.isCompleted ? Colors.green[200]! : Colors.orange[200]!,
-              ),
-            ),
-            child: Row(
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Icon(
-                  task.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
-                  color: task.isCompleted ? Colors.green : Colors.orange,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    task.title,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                Icon(Icons.task_alt, color: Theme.of(context).primaryColor),
+                const SizedBox(width: 8),
+                Text(
+                  'Úkoly příprav',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Switch(
-                  value: task.isCompleted,
-                  onChanged: (value) => _toggleTask(context, viewModel, task),
-                ),
+                const Spacer(),
+                // Only show edit icon for organizers
+                if (event.isUserOrganizer)
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20),
+                    onPressed: () => _showTaskManagement(context, viewModel),
+                    tooltip: 'Spravovat úkoly',
+                    constraints: const BoxConstraints(),
+                    padding: EdgeInsets.zero,
+                  ),
               ],
             ),
-          ),
-        )),
-      ],
+            const SizedBox(height: 12),
+            
+            // Task progress overview
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).primaryColor.withOpacity(0.1),
+                    Theme.of(context).primaryColor.withOpacity(0.05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.analytics, color: Theme.of(context).primaryColor),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Stav příprav události',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          event.tasksProgress,
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Progress indicator
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Stack(
+                      children: [
+                        CircularProgressIndicator(
+                          value: event.tasks.isEmpty ? 0.0 : event.completedTasksCount / event.tasks.length,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            event.completedTasksCount == event.tasks.length ? Colors.green : Theme.of(context).primaryColor,
+                          ),
+                          strokeWidth: 3,
+                        ),
+                        Center(
+                          child: Text(
+                            '${event.tasks.isEmpty ? 0 : ((event.completedTasksCount / event.tasks.length) * 100).round()}%',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Task list
+            if (event.tasks.isEmpty)
+              Container(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.checklist,
+                      size: 48,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Organizátor zatím nedefinoval žádné úkoly příprav',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              )
+            else
+              ...event.tasks.take(3).toList().asMap().entries.map((entry) {
+                final index = entry.key;
+                final task = entry.value;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: task.isCompleted ? Colors.green[50] : Colors.orange[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: task.isCompleted ? Colors.green[200]! : Colors.orange[200]!,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: task.isCompleted ? Colors.green : Colors.orange,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: task.isCompleted
+                                ? const Icon(Icons.check, color: Colors.white, size: 16)
+                                : Text(
+                                    '${index + 1}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            task.title,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                              color: task.isCompleted ? Colors.grey[600] : null,
+                            ),
+                          ),
+                        ),
+                        // Only organizers can toggle tasks
+                        if (event.isUserOrganizer)
+                          Switch(
+                            value: task.isCompleted,
+                            onChanged: (value) => _toggleTask(context, viewModel, task),
+                            activeColor: Colors.green,
+                          )
+                        else
+                          Icon(
+                            task.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
+                            color: task.isCompleted ? Colors.green : Colors.orange,
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            
+            // Show "View all tasks" button if there are more than 3 tasks
+            if (event.tasks.length > 3)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: TextButton.icon(
+                  onPressed: () => _showAllTasks(context, viewModel),
+                  icon: const Icon(Icons.expand_more),
+                  label: Text('Zobrazit všechny úkoly (${event.tasks.length})'),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showTaskManagement(BuildContext context, EventDetailViewModel viewModel) {
+    // TODO: Implement task management dialog for organizers
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Správa úkolů bude implementována v další verzi'),
+        backgroundColor: Colors.blue,
+      ),
+    );
+  }
+
+  void _showAllTasks(BuildContext context, EventDetailViewModel viewModel) {
+    final event = viewModel.event!;
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.7,
+        maxChildSize: 0.9,
+        minChildSize: 0.5,
+        builder: (context, scrollController) => Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.task_alt, color: Theme.of(context).primaryColor),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Všechny úkoly příprav',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                padding: const EdgeInsets.all(16),
+                itemCount: event.tasks.length,
+                itemBuilder: (context, index) {
+                  final task = event.tasks[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: task.isCompleted ? Colors.green[50] : Colors.orange[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: task.isCompleted ? Colors.green[200]! : Colors.orange[200]!,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: task.isCompleted ? Colors.green : Colors.orange,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Center(
+                              child: task.isCompleted
+                                  ? const Icon(Icons.check, color: Colors.white, size: 16)
+                                  : Text(
+                                      '${index + 1}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              task.title,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                                color: task.isCompleted ? Colors.grey[600] : null,
+                              ),
+                            ),
+                          ),
+                          // Only organizers can toggle tasks
+                          if (event.isUserOrganizer)
+                            Switch(
+                              value: task.isCompleted,
+                              onChanged: (value) => _toggleTask(context, viewModel, task),
+                              activeColor: Colors.green,
+                            )
+                          else
+                            Icon(
+                              task.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
+                              color: task.isCompleted ? Colors.green : Colors.orange,
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -940,58 +1197,50 @@ class _EventDetailPageState extends State<EventDetailPage>
   }
 
   void _addToCalendar(BuildContext context, dynamic event) async {
-    // Create calendar event data
-    final DateFormat dateFormat = DateFormat('yyyyMMddTHHmmss');
-    final String startDate = dateFormat.format(event.startDateTime);
-    final String endDate = dateFormat.format(event.endDateTime);
-    
-    // Create ICS content
-    final String icsContent = '''BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Event Manager//Event Manager//CS
-BEGIN:VEVENT
-UID:${event.id}@eventmanager.app
-DTSTART:${startDate}Z
-DTEND:${endDate}Z
-SUMMARY:${event.title}
-DESCRIPTION:${event.description}
-LOCATION:${event.location.address}
-STATUS:CONFIRMED
-SEQUENCE:0
-END:VEVENT
-END:VCALENDAR''';
-
     try {
-      // For mobile platforms, we can try to open the default calendar app
-      final Uri calendarUri = Uri(
-        scheme: 'https',
-        host: 'calendar.google.com',
-        path: '/calendar/render',
-        queryParameters: {
-          'action': 'TEMPLATE',
-          'text': event.title,
-          'dates': '${startDate}Z/${endDate}Z',
-          'details': event.description,
-          'location': event.location.address,
-        },
+      // Create Event object for add_2_calendar plugin
+      final Event calendarEvent = Event(
+        title: event.title,
+        description: event.description,
+        location: event.location.address,
+        startDate: event.startDateTime,
+        endDate: event.endDateTime,
+        iosParams: IOSParams(
+          reminder: Duration(minutes: 15), // 15 minutes before event
+          url: 'https://eventmanager.app/event/${event.id}',
+        ),
+        androidParams: AndroidParams(
+          emailInvites: [], // Can add emails here if needed
+        ),
       );
+
+      // Add to calendar using native calendar app
+      final bool success = await Add2Calendar.addEvent2Cal(calendarEvent);
       
-      if (await canLaunchUrl(calendarUri)) {
-        await launchUrl(calendarUri, mode: LaunchMode.externalApplication);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Událost byla přidána do kalendáře')),
-          );
-        }
-      } else {
-        throw 'Cannot launch calendar';
+      if (success && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Událost byla úspěšně přidána do kalendáře'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } else if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Událost nebyla přidána do kalendáře'),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 3),
+          ),
+        );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Nepodařilo se otevřít kalendář. Zkuste to později.'),
-            backgroundColor: Colors.orange,
+          SnackBar(
+            content: Text('Chyba při přidávání do kalendáře: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
           ),
         );
       }

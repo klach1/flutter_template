@@ -64,51 +64,139 @@ class _EventsMapPageState extends State<EventsMapPage> {
   }
 
   Widget _buildMapView(BuildContext context, EventsViewModel viewModel) {
-    // TODO: Implement actual map view with Google Maps or similar
-    // For now, showing a full screen map placeholder
+    // Full screen map view without any event list below
     
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: Colors.grey[300],
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.blue[100]!,
+            Colors.grey[200]!,
+          ],
+        ),
+      ),
       child: Stack(
         children: [
-          // Full screen map placeholder
+          // Full screen map placeholder with improved styling
           const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.map, size: 64, color: Colors.grey),
-                SizedBox(height: 16),
-                Text(
-                  'Mapové zobrazení',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Icon(
+                  Icons.map_outlined, 
+                  size: 80, 
+                  color: Colors.blue,
                 ),
-                SizedBox(height: 8),
-                Text('Implementace Google Maps bude přidána později'),
+                SizedBox(height: 20),
+                Text(
+                  'Mapové zobrazení událostí',
+                  style: TextStyle(
+                    fontSize: 24, 
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Integrace s Google Maps bude přidána v další verzi',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20),
+                Icon(
+                  Icons.construction,
+                  size: 32,
+                  color: Colors.orange,
+                ),
               ],
             ),
           ),
           
-          // Event count overlay in top right
+          // Event count overlay with improved styling
           Positioned(
-            top: 16,
-            right: 16,
+            top: 20,
+            right: 20,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(20),
+                color: Colors.blue.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: Text(
-                '${viewModel.events.length} událostí',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.event,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${viewModel.events.length} událostí',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
+          
+          // Filter status overlay (bottom left)
+          if (viewModel.hasActiveFilters)
+            Positioned(
+              bottom: 20,
+              left: 20,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.filter_alt,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    const Text(
+                      'Filtry aktivní',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

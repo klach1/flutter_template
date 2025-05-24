@@ -51,7 +51,8 @@ class Event {
   String get tasksProgress => '$completedTasksCount/${tasks.length} splněno';
   
   // TODO: This should check against current user ID from auth service
-  bool get isUserOrganizer => false; // Placeholder - implement with actual user logic
+  // For now, using a placeholder user ID - in real app this would come from auth service
+  bool get isUserOrganizer => organizerId == 'user-001'; // Placeholder - implement with actual user logic
 
   // Factory constructor to create from API model
   factory Event.fromApiModel(EventApiModel apiModel) {

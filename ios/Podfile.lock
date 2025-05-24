@@ -1,19 +1,25 @@
 PODS:
+  - add_2_calendar (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - url_launcher_ios (0.0.1):
     - Flutter
 
 DEPENDENCIES:
+  - add_2_calendar (from `.symlinks/plugins/add_2_calendar/ios`)
   - Flutter (from `Flutter`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 EXTERNAL SOURCES:
+  add_2_calendar:
+    :path: ".symlinks/plugins/add_2_calendar/ios"
   Flutter:
     :path: Flutter
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
+  add_2_calendar: e626377f607d055070093cbd56abd1fafa1a02a5
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
